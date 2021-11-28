@@ -15,10 +15,9 @@ def KL(alpha):
     )
     second_term = (alpha - ones).mul(torch.digamma(alpha) - torch.digamma(sum_alpha)).sum(dim=1, keepdim=True)
     kl = first_term + second_term
-    return kl.squeeze(-1)
+    return kl.reshape(-1)
 
 
-# Loss functions (there are three different ones defined in the paper)
 def loss_log(alpha, labels, kl_penalty):
     y = F.one_hot(labels.long(), alpha.shape[-1])
     log_likelihood = torch.sum(y * (torch.log(alpha.sum(dim=-1, keepdim=True)) - torch.log(alpha)), dim=-1)

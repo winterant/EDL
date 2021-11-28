@@ -27,7 +27,7 @@ class Experiment:
 
         # Define optimizer
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001, weight_decay=1e-4)
-        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=200, gamma=0.1)
+        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=40, gamma=0.1)
         self.epochs = 50
 
     def train(self, saving_path=None):
