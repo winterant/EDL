@@ -1,13 +1,33 @@
+import pickle
 from pathlib import Path
 import numpy as np
 import scipy
 from scipy.io import loadmat
 import cv2
 import torch
+from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import DataLoader, TensorDataset, Dataset
 from torchvision.datasets.mnist import MNIST
 from torchvision.datasets.cifar import CIFAR10
 import torchvision.transforms as transforms
+
+
+def load_handwritten_concat(path='dataset/handwritten_6views.pkl', train_rate=0.8):
+    # You can get "handwritten_6views.pkl" from https://github.com/winterant/TMC/tree/master/dataset
+    x, y = pickle.load(open(path, 'rb'))
+    x = np.concatenate(list(x.values()), axis=-1)  # Concatenate all views as a vector
+    x = MinMaxScaler([0, 1]).fit_transform(x).astype(np.float32)
+
+    x = torch.Tensor(x)
+    y = torch.Tensor(y).long()
+    dataset = TensorDataset(x, y)
+    num_train = int(len(dataset) * train_rate)
+    data_train, data_val = torch.utils.data.random_split(dataset, [num_train, len(dataset) - num_train])
+    return {
+        "classes": 10,
+        "train": data_train,
+        "val": data_val,
+    }
 
 
 def load_scene(path=r'E:\dataset\vision\15-Scene', train_rate=0.8, img_resize=(28, 28)):
